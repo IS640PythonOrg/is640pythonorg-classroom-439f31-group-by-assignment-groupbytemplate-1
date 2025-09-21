@@ -2,7 +2,7 @@ import subprocess
 
 # Run the student's script, capture stdout
 proc = subprocess.run(
-    ["python", "group_by_script.py", "tests/input.csv"], 
+    ["python", "group_by_script.py", "tests/input.csv", "tests/output.csv"], 
     stdout=subprocess.PIPE, 
     stderr=subprocess.PIPE, 
     encoding="utf-8",
