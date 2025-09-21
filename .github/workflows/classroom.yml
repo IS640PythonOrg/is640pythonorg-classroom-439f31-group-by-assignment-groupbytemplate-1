@@ -1,35 +1,31 @@
-name: GroupBy and Aggregate Autograder
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
 jobs:
-  autograding:
+  run-autograding-tests:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
     steps:
-      - name: Checkout student submission
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Dependencies
-        run: pip install pandas
-
-      - name: Create expected_output.csv
-        run: |
-          mkdir -p tests
-          cat << EOF > tests/expected_output.csv
-category,total
-Books,75
-Clothing,135
-Electronics,505
-EOF
-
-      - name: Run Autograder Test Script
-        run: python tests/test_script.py
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Python Autograder test
+      id: python-autograder-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Python Autograder test
+        setup-command: pip install pandas mkdir -p tests echo -e "category,total\nBooks,75\nClothing,135\nElectronics,505"
+          > tests/expected_output.csv
+        command: python tests/test_script.py
+        timeout: 10
+        max-score: 100
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        PYTHON-AUTOGRADER-TEST_RESULTS: "${{steps.python-autograder-test.outputs.result}}"
+      with:
+        runners: python-autograder-test
