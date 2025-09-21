@@ -1,0 +1,35 @@
+name: GroupBy and Aggregate Autograder
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  autograding:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout student submission
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install pandas
+
+      - name: Create expected_output.csv
+        run: |
+          mkdir -p tests
+          cat << EOF > tests/expected_output.csv
+category,total
+Books,75
+Clothing,135
+Electronics,505
+EOF
+
+      - name: Run Autograder Test Script
+        run: python tests/test_script.py
